@@ -1,7 +1,7 @@
 {
   "name": "ais-tools",
-  "version": "0.9.9",
-  "description": "A Toolset for receiving, dispatching and store of Nmea AIS Messages",
+  "version": "0.9.10",
+  "description": "A toolset for receiving, dispatching and store AIVDM/AIVDO Protocol data.",
   "main": "lib/index.js",
   "browser": "lib/browser.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
     "name": "Marcel Bretschneider",
     "email": "info@3epnm.de"
   },
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/3epnm/ais-tools/issues"
   },
