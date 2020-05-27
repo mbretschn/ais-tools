@@ -27,9 +27,12 @@ export class HTTPDispatcherService extends EventEmitter {
         let started: moment.Moment
 
         this.on('starting', () => {
+            const regex = /username=([A-Z_0-9]+)/gm
+
             this.logger.info('HTTPDispatcherService', {
                 loglevel: logger.level,
-                host: this.url,
+                host: this.url.replace(regex, 'username=********'),
+                pid: process.pid,
                 env: process.env.NODE_ENV
             })
         })
@@ -41,7 +44,7 @@ export class HTTPDispatcherService extends EventEmitter {
         this.on('finished', () => {
             const now = moment()
             const duration = now.diff(started)
-            this.logger.info(`Finished after ${(duration / 1000).toFixed(0)}s`)
+            this.logger.verbose(`Finished after ${(duration / 1000).toFixed(0)}s`)
         })
 
         this.on('closing', () => {
@@ -68,6 +71,7 @@ export class HTTPDispatcherService extends EventEmitter {
         } else {
             this.logger.info(`Wait ${(wait / 1000).toFixed(0)}s`)
             await this.delay(wait)
+            this.logger.info('Start')
         }
     }
 
@@ -90,13 +94,13 @@ export class HTTPDispatcherService extends EventEmitter {
         const start = moment()
         const end = moment().add(this.timeout, 'seconds')
 
-        this.logger.info(`Request ${start.format('hh:mm:ss')}`)
+        this.logger.verbose(`Request ${start.format('hh:mm:ss')}`)
 
         try {
             await this.job()
             await this.cont(end)
         } catch (ex) {
-            this.logger.error(`${ex.message}`)
+            this.logger.error('run', { line: 99, msg: ex.message })
             await this.cont(end)
         }
     }
@@ -138,15 +142,19 @@ export class HTTPDispatcherService extends EventEmitter {
         const json = JSON.parse(str)
 
         if (json[0].ERROR === false) {
-            this.logger.info(`${json[0].RECORDS} received`)
+            this.logger.verbose(`${json[0].RECORDS} received`)
             for (const data of json[1]) {
                 const ship = await this.decodeShipdata(data)
                 const position = await this.decodePosition(data)
-                await ship.create()
-                await position.create()
+                try {
+                    await ship.create()
+                    await position.create()
+                } catch(ex) {
+                    this.logger.error('onMessage', { line: 152, msg: ex.message })
+                }
             }
         } else {
-            this.logger.error(`${json[0].ERROR_MESSAGE}`)
+            this.logger.warn('job', { line: 156, msg: json[0].ERROR_MESSAGE })
         }
     }
 

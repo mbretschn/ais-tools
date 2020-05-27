@@ -15,8 +15,13 @@ export class NmeaDefaultCollection extends AbstractNmeaCollection implements INm
     // ***************************************
 
     public async create(current: INmeaDefault): Promise<INmeaDefault> {
-        const data = await this.database.create(this.collectionName, current.toDB()) as INmeaDefault
-        const res = this.model(data)
+        let res
+        try {
+            const data = await this.database.create(this.collectionName, current.toDB()) as INmeaDefault
+            res = this.model(data)
+        } catch (ex) {
+            res = this.model(current)
+        }
         this.info('NmeaDefault created', current)
         return res
     }
