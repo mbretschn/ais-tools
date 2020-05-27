@@ -14,9 +14,7 @@ export class NmeaShipdataFeature extends NmeaShipdata {
     }
 
     public toShipFeature(position: NmeaPositionFeature): Feature[] {
-        const A = (position.NavigationStatus === 5 || position.NavigationStatus === 15) || position.SOG < 0.2
-        const B = A && position.TrueHeading === 511
-        if (!B
+        if (!(position.SOG < 1 && position.TrueHeading === 511)
             && this.DimC < 63 && this.DimD < 63
             && this.DimA + this.DimB > 0 && this.DimC + this.DimD > 0) {
 
