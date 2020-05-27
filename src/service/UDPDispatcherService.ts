@@ -7,7 +7,7 @@ export class UDPDispatcherService extends EventEmitter {
     dispatcher: Dispatcher
     logger: MessageLogger
     udpPort: number = 0
- 
+
     started: boolean = false
 
     constructor(database: Database, logger: MessageLogger) {
