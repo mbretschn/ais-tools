@@ -20,7 +20,12 @@ export class Ship extends NmeaShipdataFeature {
 
     public async fetchInterval(sl: number, sk: TMomentKeys, el?: number, ek?: TMomentKeys, limit: number = 0): Promise<INmeaPosition[]> {
         const positions = await this._positions.fetchInterval({ MMSI: this.MMSI }, sl, sk, el, ek, limit)
-        this.position = positions[0] as NmeaPositionFeature
+        const position = positions[0] as NmeaPositionFeature
+
+        if (moment.utc(position.TimeStamp).isAfter(moment.utc(this.position.TimeStamp))) {
+            this.position = position
+        }
+
         return positions
     }
 
@@ -32,18 +37,12 @@ export class Ship extends NmeaShipdataFeature {
 
     private emitPosition = (position: NmeaPositionFeature): void => {
         if (position.MMSI === this.MMSI) {
-            let isAfter = true
             if (this._position) {
-                const A = moment.utc(position.TimeStamp)
-                const B = moment.utc(this._position.TimeStamp)
-                if (A.isBefore(B)) {
-                    isAfter = false
+                if (moment.utc(position.TimeStamp).isAfter(moment.utc(this.position.TimeStamp))) {
+                    this.position = position
                 }
-            }
-
-            if (isAfter) {
-                this._position = position
-                this.emit('position', position)
+            } else {
+                this.position = position
             }
         }
     }
@@ -68,6 +67,7 @@ export class Ship extends NmeaShipdataFeature {
 
     public set position(position: NmeaPositionFeature) {
         this._position = position
+        this.emit('position', this.position)
     }
 
     public get position(): NmeaPositionFeature {
