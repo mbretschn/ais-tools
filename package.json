@@ -1,6 +1,6 @@
 {
   "name": "ais-tools",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "A toolset for receiving, dispatching and store AIVDM/AIVDO Protocol data.",
   "main": "lib/index.js",
   "browser": "lib/browser.js",
@@ -32,13 +32,10 @@
   },
   "homepage": "https://github.com/3epnm/ais-tools#readme",
   "dependencies": {
-    "compressjs": "^1.0.3",
-    "dgram-as-promised": "^3.0.3",
     "events": "^3.1.0",
     "geographiclib": "^1.50.0",
     "moment": "^2.24.0",
     "mongodb": "^3.5.5",
-    "node-fetch": "^2.6.0",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.4.2"
   },
@@ -47,7 +44,6 @@
     "@types/mocha": "^7.0.2",
     "@types/mongodb": "^3.5.4",
     "@types/node": "^13.11.0",
-    "@types/node-fetch": "^2.5.7",
     "mocha": "^7.1.1",
     "ts-mocha": "^7.0.0",
     "ts-node-dev": "^1.0.0-pre.44",

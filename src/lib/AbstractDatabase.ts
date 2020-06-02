@@ -3,10 +3,10 @@ import { INmeaDB, INmeaFetchConfig } from '../models/AbstractNmea/INmea'
 
 export abstract class AbstractDatabase implements IDatabase {
     abstract sender: string
-    connect(): Promise<undefined> {
+    connect(): Promise<void> {
         throw new Error("Method not implemented.")
     }
-    close(): Promise<undefined> {
+    close(): Promise<void> {
         throw new Error("Method not implemented.")
     }
     createObjectID(): string {

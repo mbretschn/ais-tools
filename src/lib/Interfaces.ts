@@ -22,8 +22,8 @@ export interface IQuery {
 
 export interface IDatabase {
     sender: string
-    connect(): Promise<undefined>
-    close(): Promise<undefined>
+    connect(): Promise<void>
+    close(): Promise<void>
 
     createObjectID(): string
 

@@ -6,6 +6,7 @@ import { ILatLng, ILocation, INmeaPositionCollection, INmeaPositionData, INmeaPo
 import { NmeaPositionFormatter } from './NmeaPositionFormatter'
 import { NmeaPositionParser } from './NmeaPositionParser'
 import { Description } from './NmeaPositionMetadata'
+import { PositionError} from '../../errors/PositionError'
 
 export class NmeaPosition extends AbstractNmeaIterableModel<INmeaPosition> implements INmeaPosition {
     [key: string]: any
@@ -107,7 +108,7 @@ export class NmeaPosition extends AbstractNmeaIterableModel<INmeaPosition> imple
         this.fromModel(result)
 
         if (!this.isValid()) {
-            throw new Error(`Invalid Position (${result.MMSI})`)
+            throw new PositionError(`Invalid Position (${result.MMSI})`)
         }
 
         return this

@@ -64,17 +64,12 @@ export class MessageLogger implements IMessageLogger {
 
     public error(message: string, data?: any): void {
         const msg: IMessage = { message }
-
         if (data) msg.data = data
 
         this.logger.error(msg)
     }
 
     public warn(message: string, data?: any): void {
-        if (this.level < 1) {
-            return
-        }
-
         const msg: IMessage = { message }
         if (data) msg.data = data
 
@@ -82,10 +77,6 @@ export class MessageLogger implements IMessageLogger {
     }
 
     public info(message: string, data?: any): void {
-        if (this.level > 2) {
-            return
-        }
-
         const msg: IMessage = { message }
         if (data) msg.data = data
 
