@@ -1,6 +1,6 @@
 {
   "name": "ais-tools",
-  "version": "0.9.13",
+  "version": "0.9.14",
   "description": "A toolset for receiving, dispatching and store AIVDM/AIVDO Protocol data.",
   "main": "lib/index.js",
   "browser": "lib/browser.js",

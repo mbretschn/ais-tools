@@ -49,12 +49,16 @@ export class Database extends AbstractDatabase {
     }
 
     public async findAll(colName: TColNames, filter: any = {}, limit: number = 0, options?: INmeaFetchConfig): Promise<any> {
+        let data
+
         try {
-            return this.db.collection(colName).find(filter).sort([['TimeStamp', -1]]).limit(limit).toArray()
+            data = await this.db.collection(colName).find(filter).sort([['TimeStamp', -1]]).limit(limit).toArray()
         } catch (ex) {
             this.connected = false
             throw new DatabaseError(ex.message, ex)
         }
+
+        return data
     }
 
     // NmeaShipdata
