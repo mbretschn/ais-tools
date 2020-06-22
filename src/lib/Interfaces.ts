@@ -39,7 +39,7 @@ export interface IDbConfig {
     url: string,
     options: any,
     dbName: string
-    sender: string
+    sender?: string
 }
 
 export interface IMessageLogger {

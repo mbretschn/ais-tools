@@ -26,7 +26,7 @@ export class Database extends AbstractDatabase {
         super()
 
         this.config = config
-        this.sender = this.config.sender
+        this.sender = this.config.sender || 'undefined'
 
         this.client = new MongoClient(this.config.url, this.config.options)
     }

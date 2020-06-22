@@ -15,11 +15,11 @@ export class ShipCollection extends NmeaShipdataFeatureCollection {
         this.positions = new NmeaPositionFeatureCollection(db, logger)
     }
 
-    private emitPosition = async (position: NmeaPositionFeature): Promise<void> => {
+    public emitPosition = async (position: NmeaPositionFeature): Promise<void> => {
         this.emit('position', position)
     }
 
-    private emitShip = async (ship: Ship): Promise<void> => {
+    public emitShip = async (ship: Ship): Promise<void> => {
         const position = await this.positions.findByMMSI(ship.MMSI, { cache: true, force: false })
         if (position) {
             ship.position = position as NmeaPositionFeature
@@ -30,7 +30,6 @@ export class ShipCollection extends NmeaShipdataFeatureCollection {
     public unsubscribe(): void {
         this.off('shipdata', this.emitShip)
         this.positions.off('position', this.emitPosition)
-
         super.unsubscribe()
         this.positions.unsubscribe()
     }
@@ -51,7 +50,8 @@ export class ShipCollection extends NmeaShipdataFeatureCollection {
     }
 
     public model(data: INmeaShipdata): Ship {
-        return new Ship(this, data)
+        const ship = new Ship(this, data)
+        return ship
     }
 
     // ***************************************
@@ -61,14 +61,18 @@ export class ShipCollection extends NmeaShipdataFeatureCollection {
     public async findByMMSI(mmsi: number, options?: INmeaFetchConfig): Promise<Ship> {
         const shipdata = await super.findByMMSI(mmsi, options)
         if (shipdata) {
-            const ship = this.model(shipdata)
+            let ship = this.collection.find(ship => ship.MMSI === shipdata.MMSI)
+            if (!ship) {
+                ship = this.model(shipdata)
+            }
+
             const position = await this.positions.findByMMSI(mmsi, options)
             if (position) {
                 ship.position = position as NmeaPositionFeature
-                return ship
             } else {
                 throw new Error(`Position not found, MMSI(${mmsi})`)
             }
+            return ship as Ship
         }
         throw new Error(`Shipdata not found, MMSI(${mmsi})`)
     }

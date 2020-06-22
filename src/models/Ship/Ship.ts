@@ -2,30 +2,30 @@ import { default as moment } from 'moment'
 import { FeatureCollection, Feature } from 'geojson'
 import { TMomentKeys } from '../AbstractNmea/INmea'
 import { INmeaPosition } from '../NmeaPosition/INmeaPosition'
-import { INmeaShipdataCollection, INmeaShipdata } from '../NmeaShipdata/INmeaShipdata'
+import { INmeaShipdata } from '../NmeaShipdata/INmeaShipdata'
 import { NmeaPositionFeature } from '../NmeaPositionFeature/NmeaPositionFeature'
 import { NmeaPositionFeatureCollection } from '../NmeaPositionFeature/NmeaPositionFeatureCollection'
 import { NmeaShipdataFeature } from '../NmeaShipdataFeature/NmeaShipdataFeature'
+import { ShipCollection } from './ShipCollection'
 
 export class Ship extends NmeaShipdataFeature {
     private _position?: NmeaPositionFeature
     private _positions: NmeaPositionFeatureCollection
     private subscriptions: number = 0
 
-    constructor(collection: INmeaShipdataCollection, model?: INmeaShipdata) {
-        super(collection, model)
+    public collection: ShipCollection
 
+    constructor(collection: ShipCollection, model?: INmeaShipdata) {
+        super(collection, model)
+        this.collection = collection
         this._positions = new NmeaPositionFeatureCollection(collection.database, collection.logger)
     }
 
     public async fetchInterval(sl: number, sk: TMomentKeys, el?: number, ek?: TMomentKeys, limit: number = 0): Promise<INmeaPosition[]> {
         const positions = await this._positions.fetchInterval({ MMSI: this.MMSI }, sl, sk, el, ek, limit)
         const position = positions[0] as NmeaPositionFeature
-
-        if (moment.utc(position.TimeStamp).isAfter(moment.utc(this.position.TimeStamp))) {
-            this.position = position
-        }
-
+        this.emitPosition(position)
+        this.collection.emitPosition(position)
         return positions
     }
 
@@ -37,11 +37,7 @@ export class Ship extends NmeaShipdataFeature {
 
     private emitPosition = (position: NmeaPositionFeature): void => {
         if (position.MMSI === this.MMSI) {
-            if (this._position) {
-                if (moment.utc(position.TimeStamp).isAfter(moment.utc(this.position.TimeStamp))) {
-                    this.position = position
-                }
-            } else {
+            if (!this._position || moment.utc(position.TimeStamp).isAfter(moment.utc(this.position.TimeStamp))) {
                 this.position = position
             }
         }
@@ -51,8 +47,8 @@ export class Ship extends NmeaShipdataFeature {
         this.subscriptions--
         if (this.subscriptions === 0) {
             this.collection.off('shipdata', this.emitShip)
-            this._positions.off('position', this.emitPosition)
-            this._positions.unsubscribe()
+            this.positions.off('position', this.emitPosition)
+            this.positions.unsubscribe()
         }
     }
 
@@ -60,7 +56,7 @@ export class Ship extends NmeaShipdataFeature {
         this.subscriptions++
         if (this.subscriptions < 2) {
             await this._positions.subscribe()
-            this._positions.on('position', this.emitPosition)
+            this.positions.on('position', this.emitPosition)
             this.collection.on('shipdata', this.emitShip)
         }
     }
