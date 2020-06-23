@@ -4,6 +4,7 @@ import { TPositionDirection } from '../AbstractNmea/INmea'
 import { INmeaPosition } from '../NmeaPosition/INmeaPosition'
 import { INmeaPositionFeatureCollection } from './INmeaPositionFeature'
 import { NmeaPosition } from '../NmeaPosition/NmeaPosition'
+import { Color } from '../../lib/Color'
 
 export class NmeaPositionFeature extends NmeaPosition {
     collection: INmeaPositionFeatureCollection
@@ -13,11 +14,9 @@ export class NmeaPositionFeature extends NmeaPosition {
         this.collection = collection
     }
 
-    public toFeature(d: number = 5, before?: INmeaPosition): Feature[] {
+    public toFeature(d: number = 5, color: Color, before?: INmeaPosition): Feature[] {
         before = before || this
         const features: Feature[] = []
-
-        const color = this.collection.color
 
         const senders = []
         for (const sender of this.Sender) {
@@ -107,7 +106,7 @@ export class NmeaPositionFeature extends NmeaPosition {
         return properties
     }
 
-    public async toTrackFragment(d: number = 5): Promise<Feature[]> {
+    public async toTrackFragment(d: number = 5, color: Color): Promise<Feature[]> {
         const track: Feature[] = []
         if (!this.previous) {
             return track
@@ -122,14 +121,13 @@ export class NmeaPositionFeature extends NmeaPosition {
                     [this.Longitude, this.Latitude]
                 ]
             },
-            "properties": this.trackFragmentProperties()
+            "properties": this.trackFragmentProperties(color)
         })
 
-        return track.concat(this.toFeature(d, this.previous))
+        return track.concat(this.toFeature(d, color, this.previous))
     }
 
-    public trackFragmentProperties(): GeoJsonProperties {
-        const color = this.collection.color
+    public trackFragmentProperties(color: Color): GeoJsonProperties {
         return {
             'stroke': color.get(3),
             'stroke-width': 2,

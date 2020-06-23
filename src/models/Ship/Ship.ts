@@ -7,13 +7,27 @@ import { NmeaPositionFeature } from '../NmeaPositionFeature/NmeaPositionFeature'
 import { NmeaPositionFeatureCollection } from '../NmeaPositionFeature/NmeaPositionFeatureCollection'
 import { NmeaShipdataFeature } from '../NmeaShipdataFeature/NmeaShipdataFeature'
 import { ShipCollection } from './ShipCollection'
+import { Color } from '../../lib/Color'
+import { ColorSchemes } from '../../lib/Colors'
 
 export class Ship extends NmeaShipdataFeature {
     private _position?: NmeaPositionFeature
     private _positions: NmeaPositionFeatureCollection
     private subscriptions: number = 0
-
     public collection: ShipCollection
+
+    private _color?: Color
+
+    get color(): Color {
+        if (!this._color) {
+            this._color = ColorSchemes.get(0)
+        }
+        return this._color
+    }
+
+    set color(color: Color) {
+        this._color = color
+    }
 
     constructor(collection: ShipCollection, model?: INmeaShipdata) {
         super(collection, model)
@@ -115,7 +129,7 @@ export class Ship extends NmeaShipdataFeature {
         if (this._positions) {
             await this._positions.fetchInterval({ MMSI: this.MMSI }, sl, sk, undefined, undefined, length, { unique: false })
 
-            const track = await this._positions.toTrack()
+            const track = await this._positions.toTrack(2, this.color)
             features = features.concat(track)
         }
 
@@ -129,10 +143,11 @@ export class Ship extends NmeaShipdataFeature {
         return featureCollection
     }
 
-    public async toTrackFragment(): Promise<Feature[] | undefined> {
-        if (this._position) {
-            const features: Feature[] = await this._position.toTrackFragment()
-            return features.concat(this.toFeature())
-        }
+    public async toTrack(): Promise<Feature[]> {
+        return this.positions.toTrack(2, this.color)
+    }
+
+    public async toTrackFragment(position: NmeaPositionFeature): Promise<Feature[] | undefined> {
+        return position.toTrackFragment(2, this.color)
     }
 }

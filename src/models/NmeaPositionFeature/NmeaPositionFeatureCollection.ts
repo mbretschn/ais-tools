@@ -4,22 +4,8 @@ import { INmeaPositionFeatureCollection } from './INmeaPositionFeature'
 import { NmeaPositionCollection } from '../NmeaPosition/NmeaPositionCollection'
 import { NmeaPositionFeature } from './NmeaPositionFeature'
 import { Color } from '../../lib/Color'
-import { ColorSchemes } from '../../lib/Colors'
 
 export class NmeaPositionFeatureCollection extends NmeaPositionCollection implements INmeaPositionFeatureCollection {
-    private _color?: Color
-
-    get color(): Color {
-        if (!this._color) {
-            this._color = ColorSchemes.get(0)
-        }
-        return this._color
-    }
-
-    set color(color: Color) {
-        this._color = color
-    }
-
     public model(data: INmeaPosition): NmeaPositionFeature {
         return new NmeaPositionFeature(this, data)
     }
@@ -28,13 +14,13 @@ export class NmeaPositionFeatureCollection extends NmeaPositionCollection implem
     // GeoJSON
     // ***************************************
 
-    public async toTrack(d: number = 5): Promise<Feature[]> {
+    public async toTrack(d: number = 5, color: Color): Promise<Feature[]> {
         let track: Feature[] = []
 
         let idx: number = 0
         for (const current of this._collection) {
             if (++idx < this.collection.length) {
-                const feature = await current.toTrackFragment(d)
+                const feature = await current.toTrackFragment(d, color)
                 track = track.concat(feature)
             }
         }
@@ -42,13 +28,13 @@ export class NmeaPositionFeatureCollection extends NmeaPositionCollection implem
         return track
     }
 
-    public async toFeatureCollection(d: number = 5): Promise<Feature[]> {
+    public async toFeatureCollection(d: number = 5, color: Color): Promise<Feature[]> {
         let features: Feature[] = []
 
         let idx: number = 0
         for (const current of this._collection) {
             if (idx > 0) {
-                const fragment = await current.toFeature(d)
+                const fragment = await current.toFeature(d, color)
                 if (fragment) {
                     features = features.concat(fragment)
                 }
