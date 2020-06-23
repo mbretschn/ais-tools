@@ -1,11 +1,10 @@
 import { Feature } from 'geojson'
 import { INmeaPosition } from '../NmeaPosition/INmeaPosition'
-import { INmeaPositionFeatureCollection } from './INmeaPositionFeature'
 import { NmeaPositionCollection } from '../NmeaPosition/NmeaPositionCollection'
 import { NmeaPositionFeature } from './NmeaPositionFeature'
 import { Color } from '../../lib/Color'
 
-export class NmeaPositionFeatureCollection extends NmeaPositionCollection implements INmeaPositionFeatureCollection {
+export class NmeaPositionFeatureCollection extends NmeaPositionCollection {
     public model(data: INmeaPosition): NmeaPositionFeature {
         return new NmeaPositionFeature(this, data)
     }
