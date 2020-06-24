@@ -132,19 +132,13 @@ export class Database extends AbstractDatabase {
                 }
             })
 
-            const foundB = await this.db.collection(name).findOne({ _id: foundA._id })
+            await this.db.collection('messages').insertOne({
+                Type: 'NmeaPosition',
+                Data: foundA,
+                TimeStamp: Date.now()
+            })
 
-            if (foundB.AIS < 4 && foundB.isSend !== true) {
-                await this.db.collection('messages').insertOne({
-                    Type: 'NmeaPosition',
-                    Data: foundB,
-                    TimeStamp: Date.now()
-                })
-
-                await this.db.collection(name).updateOne({ _id: foundA._id }, { isSend: true })
-            }
-
-            return foundB
+            return foundA
         } catch (ex) {
             this.connected = false
             throw new DatabaseError(ex.message, ex)
