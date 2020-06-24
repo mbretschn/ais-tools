@@ -111,20 +111,23 @@ export class NmeaPositionFeature extends NmeaPosition {
         if (!this.previous) {
             return track
         }
-
-        track.push({
-            "type": "Feature",
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                    [this.previous.Longitude, this.previous.Latitude],
-                    [this.Longitude, this.Latitude]
-                ]
-            },
-            "properties": this.trackFragmentProperties(color)
-        })
-
-        return track.concat(this.toFeature(d, color, this.previous))
+        try {
+            track.push({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [this.previous.Longitude, this.previous.Latitude],
+                        [this.Longitude, this.Latitude]
+                    ]
+                },
+                "properties": this.trackFragmentProperties(color)
+            })
+            return track.concat(this.toFeature(d, color, this.previous))
+        } catch (ex) {
+            console.log(this.MMSI, ex)
+            return track
+        }
     }
 
     public trackFragmentProperties(color: Color): GeoJsonProperties {
