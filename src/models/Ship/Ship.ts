@@ -77,7 +77,6 @@ export class Ship extends NmeaShipdataFeature {
     public set position(position: NmeaPositionFeature) {
         this._position = position
         this.emit('position', this.position)
-        this.collection.emitPosition(position)
     }
 
     public get position(): NmeaPositionFeature {
