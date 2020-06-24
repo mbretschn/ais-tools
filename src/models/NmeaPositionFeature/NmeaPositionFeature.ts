@@ -125,7 +125,7 @@ export class NmeaPositionFeature extends NmeaPosition {
             })
             return track.concat(this.toFeature(d, color, this.previous))
         } catch (ex) {
-            console.log(this.MMSI, ex)
+            console.error(this.MMSI, ex)
             return track
         }
     }
