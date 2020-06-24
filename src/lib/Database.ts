@@ -132,7 +132,7 @@ export class Database extends AbstractDatabase {
                 }
             })
 
-            const foundB = await this.db.collection(name).findOne(data.filter)
+            const foundB = await this.db.collection(name).findOne({ _id: foundA._id })
 
             if (foundB.AIS < 4 && foundB.isSend !== true) {
                 await this.db.collection('messages').insertOne({
