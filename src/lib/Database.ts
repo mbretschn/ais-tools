@@ -95,7 +95,7 @@ export class Database extends AbstractDatabase {
             return foundA
         } catch (ex) {
             this.connected = false
-            throw new DatabaseError(ex.message, ex)
+            throw new DatabaseError('update ' + ex.message, ex)
         }
     }
 
@@ -108,6 +108,8 @@ export class Database extends AbstractDatabase {
                     return
                 }
             }
+
+            data.tail.isSend = false
 
             await this.db.collection(name).updateOne(data.filter, {
                 $set: data.head,
@@ -132,16 +134,21 @@ export class Database extends AbstractDatabase {
                 }
             })
 
-            await this.db.collection('messages').insertOne({
-                Type: 'NmeaPosition',
-                Data: foundA,
-                TimeStamp: Date.now()
-            })
+            if (foundA.isSend === false) {
+                await this.db.collection('messages').insertOne({
+                    Type: 'NmeaPosition',
+                    Data: foundA,
+                    TimeStamp: Date.now()
+                })
+                await this.db.collection(name).updateOne({ _id: foundA._id }, {
+                    $set: { isSend: true }
+                })
+            }
 
             return foundA
         } catch (ex) {
             this.connected = false
-            throw new DatabaseError(ex.message, ex)
+            throw new DatabaseError('create ' + ex.message, ex)
         }
     }
 
