@@ -39,7 +39,6 @@ export class Ship extends NmeaShipdataFeature {
         const positions = await this._positions.fetchInterval({ MMSI: this.MMSI }, sl, sk, el, ek, limit)
         const position = positions[0] as NmeaPositionFeature
         this.emitPosition(position)
-        this.collection.emitPosition(position)
         return positions
     }
 
@@ -78,6 +77,7 @@ export class Ship extends NmeaShipdataFeature {
     public set position(position: NmeaPositionFeature) {
         this._position = position
         this.emit('position', this.position)
+        this.collection.emitPosition(position)
     }
 
     public get position(): NmeaPositionFeature {

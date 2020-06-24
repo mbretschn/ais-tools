@@ -134,7 +134,7 @@ export class Database extends AbstractDatabase {
 
             const foundB = await this.db.collection(name).findOne(data.filter)
 
-            if (foundB.AIS < 4 && foundB.Sender.length === 1) {
+            if (foundB.AIS < 4) {
                 await this.db.collection('messages').insertOne({
                     Type: 'NmeaPosition',
                     Data: foundB,
