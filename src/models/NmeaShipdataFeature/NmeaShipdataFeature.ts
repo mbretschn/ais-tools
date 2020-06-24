@@ -80,7 +80,7 @@ export class NmeaShipdataFeature extends NmeaShipdata {
                     'type': 'Polygon',
                     'coordinates': [shapeCoordinates]
                 },
-                'properties': this.featureProperties()
+                'properties': this.featureProperties(position)
             }]
         } else {
             const features: Feature[] = []
@@ -91,6 +91,7 @@ export class NmeaShipdataFeature extends NmeaShipdata {
             for (const feature of features) {
                 if (feature.properties) {
                     feature.properties._id = this._id
+                    feature.properties._pid = position._id
                 }
             }
 
@@ -98,7 +99,7 @@ export class NmeaShipdataFeature extends NmeaShipdata {
         }
     }
 
-    public featureProperties(): GeoJsonProperties {
+    public featureProperties(position: NmeaPositionFeature): GeoJsonProperties {
         const properties: GeoJsonProperties = {
             'stroke': '#9AA400',
             'fill': '#FFEB73',
@@ -107,7 +108,8 @@ export class NmeaShipdataFeature extends NmeaShipdata {
             'fill-opacity': 0.7,
             'type': 'Ship',
             'mmsi': this.MMSI,
-            '_id': this._id
+            '_id': this._id,
+            '_pid': position._id
         }
 
         return properties
@@ -120,11 +122,11 @@ export class NmeaShipdataFeature extends NmeaShipdata {
                 'type': 'Point',
                 'coordinates': [position.Longitude, position.Latitude]
             },
-            'properties': this.markerProperties(position)
+            'properties': this.markerProperties()
         }
     }
 
-    public markerProperties(position: NmeaPositionFeature): GeoJsonProperties {
+    public markerProperties(): GeoJsonProperties {
         return {
             'stroke': '#FF0000',
             'stroke-width': 0,
