@@ -135,16 +135,16 @@ export class Database extends AbstractDatabase {
             })
 
             if (foundA.isSend === false) {
+                foundA.isSend = true
+                await this.db.collection(name).updateOne({ _id: foundA._id }, {
+                    $set: { isSend: foundA.isSend }
+                })
                 await this.db.collection('messages').insertOne({
                     Type: 'NmeaPosition',
                     Data: foundA,
                     TimeStamp: Date.now()
                 })
-                await this.db.collection(name).updateOne({ _id: foundA._id }, {
-                    $set: { isSend: true }
-                })
             }
-
             return foundA
         } catch (ex) {
             this.connected = false

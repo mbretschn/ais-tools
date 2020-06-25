@@ -57,28 +57,29 @@ export class NmeaPositionCollection extends AbstractNmeaIterableCollection<INmea
         }
 
         const position = this.model(data.Data)
+        if (position.isValid()) {
+            this._collection.unshift(position)
+            this._collection.sort(this.comperator)
 
-        this._collection.unshift(position)
-        this._collection.sort(this.comperator)
+            const toRemove: INmeaPosition[] = []
 
-        const toRemove: INmeaPosition[] = []
+            const timeout = moment()
+            timeout.subtract(1, 'hour')
 
-        const timeout = moment()
-        timeout.subtract(1, 'hour')
+            for (const item of this) {
+                const time = moment(item.TimeStamp)
 
-        for (const item of this) {
-            const time = moment(item.TimeStamp)
-
-            if (time.isBefore(timeout)) {
-                toRemove.push(item)
+                if (time.isBefore(timeout)) {
+                    toRemove.push(item)
+                }
             }
+
+            this._collection = this._collection.filter(item => {
+                return toRemove.findIndex(remove => remove._id === item._id) < 0
+            })
+
+            this.emit('position', position)
         }
-
-        this._collection = this._collection.filter(item => {
-            return toRemove.findIndex(remove => remove._id === item._id) < 0
-        })
-
-        this.emit('position', position)
     }
 
     // ***************************************

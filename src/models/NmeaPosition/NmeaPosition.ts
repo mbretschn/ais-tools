@@ -184,9 +184,13 @@ export class NmeaPosition extends AbstractNmeaIterableModel<INmeaPosition> imple
     // ***************************************
 
     public isValid(): boolean {
-        return this.MMSI > 0 && this.TimeStampStatus < 60
-            && this.Longitude >= -180 && this.Latitude >= -90
-            && this.Longitude <= 180 && this.Latitude <= 90
+        try {
+            return this.MMSI > 0 && this.TimeStampStatus < 60
+                && this.Longitude >= -180 && this.Latitude >= -90
+                && this.Longitude <= 180 && this.Latitude <= 90
+        } catch (ex) {
+            return false
+        }
     }
 
     private calcDistanceMoved(previous: INmeaPosition): number {

@@ -9,8 +9,7 @@
         "no-conditional-assignment": false,
         "no-unused-expression": false,
         "object-literal-shorthand": false,
-        "adjacent-overload-signatures": false,
-        "no-console": [ "error" ]
+        "adjacent-overload-signatures": false
     },
     "rulesDirectory": []
 }

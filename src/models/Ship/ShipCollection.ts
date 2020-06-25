@@ -57,7 +57,6 @@ export class ShipCollection extends NmeaShipdataFeatureCollection {
     // ***************************************
     // Find
     // ***************************************
-
     public async findByMMSI(mmsi: number, options?: INmeaFetchConfig): Promise<Ship> {
         const shipdata = await super.findByMMSI(mmsi, options)
         if (shipdata) {
